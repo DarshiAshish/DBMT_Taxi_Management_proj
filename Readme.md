@@ -1,4 +1,4 @@
-Ride One
+Ride One Application.
 
 1. Clone the repository. 
 
