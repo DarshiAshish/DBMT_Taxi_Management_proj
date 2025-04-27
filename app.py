@@ -707,7 +707,6 @@ def give_ride():
     # SMS code
     # code for sending the sms message  
     # from twilio.rest import Client
-
     # # Twilio credentials from your Twilio account
     # account_sid = '' # account sid
     # auth_token = '' # auth token
