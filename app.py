@@ -16,7 +16,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 
-pass_word = "ABCDabcd123$" # enter the password here
+pass_word = "" # enter the password here
 
 conn = mysql.connector.connect(
 host="localhost",
