@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Registration</title>
+  <style>
+    body {
+      background-image: url('https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .form-box {
+      background: rgba(0, 0, 0, 0.7); 
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      color: #fff; 
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      background-color: #fff;
+      color: #333;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus {
+      border-color: #4CAF50; 
+      outline: none;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50; 
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    button:hover {
+      background-color: #45a049; 
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    select {
+      background-color: #f9f9f9;
+    }
+
+    /* Responsive design */
+    @media screen and (max-width: 480px) {
+      .form-box {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <form class="form-box" id="driverForm">
+    <h2>Driver Registration</h2>
+
+    <!-- Personal Info -->
+    <label>First Name*</label>
+    <input type="text" id="first_name" required>
+
+    <label>Middle Name</label>
+    <input type="text" id="middle_name">
+
+    <label>Last Name*</label>
+    <input type="text" id="last_name" required>
+
+    <label>Email*</label>
+    <input type="email" id="email" required>
+
+    <label>Phone Number*</label>
+    <input type="text" id="phone_number" required>
+
+    <label>Gender*</label>
+    <select id="gender" required>
+      <option value="">-- Select --</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+
+    <label>Date of Birth*</label>
+    <input type="date" id="dob" required>
+
+    <label>Age*</label>
+    <input type="number" id="age" required>
+
+    <!-- License Info -->
+    <label>License Number*</label>
+    <input type="text" id="license_id" required>
+
+    <label>License Expiry*</label>
+    <input type="date" id="license_expiry" required>
+
+    <!-- Address -->
+    <label>Address*</label>
+    <input type="text" id="address" required>
+
+    <label>City*</label>
+    <input type="text" id="city" required>
+
+    <label>Pincode*</label>
+    <input type="text" id="pincode" required>
+
+    <label>Vehicle Type*</label>
+    <select id="vehicle_type" required onchange="toggleVehicleSection()">
+      <option value="">-- Select --</option>
+      <option value="vehicle">Personal Vehicle</option>
+      <option value="cov">Company Owned Vehicle</option>
+    </select>
+
+    <div id="vehicleDetails" style="display: none;">
+      <label>Make*</label>
+      <input type="text" id="make">
+      
+      <label>Model*</label>
+      <input type="text" id="model">
+    
+      <label>Plate Number*</label>
+      <input type="text" id="plate_number">
+    
+      <label>Type*</label>
+      <input type="text" id="type">
+      
+      <label>AC/Non-AC*</label>
+      <select id="ac_non">
+        <option value="">-- Select --</option>
+        <option value="AC">AC</option>
+        <option value="Non-AC">Non-AC</option>
+      </select>
+    </div>
+
+    <!-- Login Info -->
+    <label>Password*</label>
+    <input type="password" id="password" required>
+
+    <div class="button-row">
+      <button type="reset">Clear</button>
+      <button type="button" onclick="submitDriver()">Register</button>
+    </div>
+  </form>
+
+  <script>
+    function toggleVehicleSection() {
+      const type = document.getElementById("vehicle_type").value;
+      const vehicleDetails = document.getElementById("vehicleDetails");
+
+      vehicleDetails.style.display = (type === "vehicle") ? "block" : "none";
+    }
+
+    async function submitDriver() {
+      const type = document.getElementById("vehicle_type").value;
+
+      const data = {
+        first_name: document.getElementById('first_name').value,
+        middle_name: document.getElementById('middle_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        phone_number: document.getElementById('phone_number').value,
+        gender: document.getElementById('gender').value,
+        dob: document.getElementById('dob').value,
+        age: document.getElementById('age').value,
+        license_id: document.getElementById('license_id').value,
+        license_expiry: document.getElementById('license_expiry').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        pincode: document.getElementById('pincode').value,
+        vehicle_type: type,
+        password: document.getElementById('password').value
+      };
+
+      if (type === 'vehicle' || type === 'cov') {
+        data.vehicle = {
+          make: document.getElementById('make').value,
+          model: document.getElementById('model').value,
+          plate_number: document.getElementById('plate_number').value,
+          type: document.getElementById('type').value,
+          ac_non: document.getElementById('ac_non').value
+        };
+      }
+
+      const response = await fetch('/signup_driver_submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        alert("Driver registered successfully!");
+        window.location.href = '/login';
+      } else {
+        alert("Submission failed.");
+        console.error(await response.text());
+      }
+    }
+  </script>
+</body>
+</html>

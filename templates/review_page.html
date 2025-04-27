@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rate Your Driver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #000;
+      padding: 30px;
+      margin: 0;
+      background-image: url('https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  
+    .rating-container {
+      background: rgba(243, 243, 247, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+  
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+  
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+    }
+  
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #0b0909;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+  
+    .star-rating {
+      direction: rtl;
+      display: flex;
+      justify-content: space-between;
+      max-width: 220px;
+      margin-bottom: 15px;
+    }
+  
+    .star-rating input[type="radio"] {
+      display: none;
+    }
+  
+    .star-rating label {
+      font-size: 32px;
+      color: #bbb;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+  
+    .star-rating input[type="radio"]:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: #f5b301;
+    }
+  
+    button {
+      background-color: #000e03;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+  
+    button:hover {
+      background-color: #000b02;
+    }
+  </style>
+  
+</head>
+<body>
+  <div class="rating-container">
+    <h2>Rate Your Driver</h2>
+    <form id="ratingForm">
+      <label for="rideId">Ride ID</label>
+      <input type="number" id="rideId" name="ride_id" required />
+
+      <label for="customerEmail">Your Email</label>
+      <input type="email" id="customerEmail" name="customer_email" required />
+
+      <label for="driverEmail">Driver Email</label>
+      <input type="email" id="driverEmail" name="driver_email" required />
+
+      <label for="rating">Rating <span style="color: red;">*</span></label>
+      <div class="star-rating">
+        <input type="radio" id="star5" name="customer_rating" value="5" required />
+        <label for="star5">&#9733;</label>
+        <input type="radio" id="star4" name="customer_rating" value="4" />
+        <label for="star4">&#9733;</label>
+        <input type="radio" id="star3" name="customer_rating" value="3" />
+        <label for="star3">&#9733;</label>
+        <input type="radio" id="star2" name="customer_rating" value="2" />
+        <label for="star2">&#9733;</label>
+        <input type="radio" id="star1" name="customer_rating" value="1" />
+        <label for="star1">&#9733;</label>
+      </div>
+
+      <label for="feedback">Feedback (optional)</label>
+      <textarea id="feedback" name="feedback" rows="4"></textarea>
+
+      <button type="button" id="submitRatingBtn">Submit Rating</button>
+    </form>
+  </div>
+
+  <script>
+    async function fetchUser() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const response = await fetch("/api/review_page", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await response.json();
+      if (response.ok && data.review_resp?.status !== false) {
+        const details = data.review_resp.review_details;
+        document.getElementById("rideId").value = details.ride_id;
+        document.getElementById("customerEmail").value = details.customer_email;
+        document.getElementById("driverEmail").value = details.driver_email;
+      } else {
+        window.location.href = "/login";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("submitRatingBtn").addEventListener("click", async function () {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
+
+        const payload = {
+          ride_id: document.getElementById("rideId").value,
+          customer_email: document.getElementById("customerEmail").value,
+          driver_email: document.getElementById("driverEmail").value,
+          customer_rating: document.querySelector('input[name="customer_rating"]:checked')?.value,
+          feedback: document.getElementById("feedback").value.trim(),
+        };
+
+        const response = await fetch("/rate_driver", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          document.getElementById("ratingForm").reset();
+          window.location.href = "/customer_dashboard";
+        } else {
+          window.location.href = "/customer_dashboard"; // fallback redirect
+        }
+      });
+    });
+
+    fetchUser();
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <style>
+        /* Background and Form Styling */
+        body {
+            background-image: url('https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-box {
+            background: rgba(0, 0, 0, 0.7); /* Darker semi-transparent background */
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            color: #fff;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            background-color: #fff;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        h2 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Button colors */
+        button[type="reset"],
+        button[type="button"] {
+            background-color: #28a745;
+            color: white;
+        }
+
+        button[type="reset"]:hover,
+        button[type="button"]:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <form class="form-box" id="userForm">
+        <h2>User Registration</h2>
+
+        <label>First Name*</label>
+        <input type="text" name="firstname" placeholder="Enter First Name" required>
+
+        <label>Middle Name</label>
+        <input type="text" name="middlename" placeholder="Enter Middle Name">
+
+        <label>Last Name*</label>
+        <input type="text" name="lastname" placeholder="Enter Last Name" required>
+
+        <label>Password*</label>
+        <input type="password" name="password" placeholder="Enter Password" required>
+
+        <label>Gender*</label>
+        <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label>Birth Date*</label>
+        <input type="date" name="birthdate" required>
+
+        <label>Email*</label>
+        <input type="email" name="email" placeholder="Enter Email" required>
+
+        <label>Phone*</label>
+        <input type="text" name="phone" placeholder="Enter Phone Number" required>
+
+        <div class="button-row">
+            <button type="reset">Clear</button>
+            <button type="button" onclick="submitForm()">Next</button>
+        </div>
+    </form>
+
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('userForm');
+
+            const data = {
+                firstname: form.firstname.value,
+                lastname: form.lastname.value,
+                middlename: form.middlename.value,
+                password: form.password.value,
+                gender: form.gender.value,
+                birthdate: form.birthdate.value,
+                email: form.email.value,
+                phone: form.phone.value
+            };
+
+            const response = await fetch('/signup_user_submission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('User info submitted successfully!');
+                window.location.href = '/login';  
+            } else {
+                alert('Submission failed!');
+            }
+        }
+    </script>
+</body>
+</html>

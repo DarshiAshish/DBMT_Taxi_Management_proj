@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 900;
+      color: black;
+      text-align: center;
+      margin-top: 30px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #000;
+    }
+
+    .logout-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 18px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .tab button {
+      padding: 12px 24px;
+      cursor: pointer;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 0 8px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .tab button:hover {
+      background-color: #333;
+      transform: scale(1.05);
+    }
+
+    .table-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      width: 85%;
+      margin: auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th {
+      background-color: #333;
+      color: white;
+      padding: 12px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    tr:hover {
+      background-color: #e6f7ff;
+    }
+
+    tr.selected {
+      background-color: #aee1ff !important;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.97);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      width: 500px;
+      max-width: 90%;
+    }
+
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .modal.show {
+      display: block;
+      animation: slideFadeIn 0.4s ease-out;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+      font-size: 16px;
+    }
+
+    .modal-content button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background-color: #555;
+    }
+
+    body.modal-open::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+
+    #customSection textarea {
+      font-size: 16px;
+      width: 80%;
+      margin: auto;
+    }
+
+    #customSection button {
+      margin-top: 10px;
+      padding: 10px 18px;
+      border: none;
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-button" onclick="logout()">Logout</button>
+  <h1>🚖 Admin Dashboard</h1>
+
+  <div class="tab">
+    <button onclick="showTab('user')">Users</button>
+    <button onclick="showTab('driver')">Drivers</button>
+    <button onclick="callCustomAPI()">Custom</button>
+  </div>
+
+  <div id="user" class="tab-content">
+    <div class="table-card">
+      <h2>User Table</h2>
+      <table>
+        <tr><th>ID</th><th>Name</th><th>Phone</th><th>Age</th><th>Gender</th><th>Password</th></tr>
+        {% for u in users %}
+        <tr onclick="editUser('{{ u.customer_registration_id }}', '{{ u.first_name }}', '{{ u.last_name }}', '{{ u.phone_number }}', '{{ u.age }}', '{{ u.gender }}', '{{ u.password }}')">
+          <td>{{ u.customer_registration_id }}</td>
+          <td>{{ u.first_name }} {{ u.last_name }}</td>
+          <td>{{ u.phone_number }}</td>
+          <td>{{ u.age }}</td>
+          <td>{{ u.gender }}</td>
+          <td>{{ u.password }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div id="driver" class="tab-content" style="display:none">
+    <div class="table-card">
+      <h2>Driver Table</h2>
+      <table>
+        <tr><th>ID</th><th>Name</th><th>Phone</th><th>Age</th><th>Gender</th><th>Password</th><th>Status</th></tr>
+        {% for d in drivers %}
+        <tr onclick="editDriver('{{ d.driver_registration_id }}', '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.phone_number }}', '{{ d.age }}', '{{ d.gender }}', '{{ d.password }}', '{{ d.driver_status }}')">
+          <td>{{ d.driver_registration_id }}</td>
+          <td>{{ d.first_name }} {{ d.last_name }}</td>
+          <td>{{ d.phone_number }}</td>
+          <td>{{ d.age }}</td>
+          <td>{{ d.gender }}</td>
+          <td>{{ d.password }}</td>
+          <td>{{ d.driver_status }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div id="customSection" style="display:none; text-align: center; margin-top: 20px;">
+    <h2>Custom Command Box</h2>
+    <textarea id="customTextInput" rows="10" placeholder="Type your custom text or command here..."></textarea><br>
+    <button onclick="submitCustomText()">Send to API</button>
+  </div>
+
+  <!-- User Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit User Info</h3>
+      <input id="editUserId" type="hidden">
+      <input id="editUserFirst" placeholder="First Name">
+      <input id="editUserLast" placeholder="Last Name">
+      <input id="editUserPhone" placeholder="Phone Number">
+      <input id="editUserAge" placeholder="Age">
+      <input id="editUserGender" placeholder="Gender">
+      <input id="editUserPassword" placeholder="Password">
+      <button onclick="saveUser()">Save</button>
+      <button onclick="closeUserModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Driver Modal -->
+  <div id="driverModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Driver Info</h3>
+      <input id="editDriverId" type="hidden">
+      <input id="editDriverFirst" placeholder="First Name">
+      <input id="editDriverLast" placeholder="Last Name">
+      <input id="editDriverPhone" placeholder="Phone Number">
+      <input id="editDriverAge" placeholder="Age">
+      <input id="editDriverGender" placeholder="Gender">
+      <input id="editDriverPassword" placeholder="Password">
+      <select id="editDriverStatus">
+        <option value="Active">Active</option>
+        <option value="Blocked">Blocked</option>
+      </select>
+      <button onclick="saveDriver()">Save</button>
+      <button onclick="closeDriverModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/admin';
+    }
+
+    function showTab(tabId) {
+      document.getElementById('user').style.display = tabId === 'user' ? 'block' : 'none';
+      document.getElementById('driver').style.display = tabId === 'driver' ? 'block' : 'none';
+      document.getElementById('customSection').style.display = 'none';
+    }
+
+    function callCustomAPI() {
+      document.getElementById('user').style.display = 'none';
+      document.getElementById('driver').style.display = 'none';
+      document.getElementById('customSection').style.display = 'block';
+    }
+
+    function editUser(id, first, last, phone, age, gender, password) {
+      document.getElementById('editUserId').value = id;
+      document.getElementById('editUserFirst').value = first;
+      document.getElementById('editUserLast').value = last;
+      document.getElementById('editUserPhone').value = phone;
+      document.getElementById('editUserAge').value = age;
+      document.getElementById('editUserGender').value = gender;
+      document.getElementById('editUserPassword').value = password;
+      document.getElementById('userModal').classList.add('show');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeUserModal() {
+      document.getElementById('userModal').classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+
+    function saveUser() {
+      const payload = {
+        id: document.getElementById('editUserId').value,
+        first_name: document.getElementById('editUserFirst').value,
+        last_name: document.getElementById('editUserLast').value,
+        phone_number: document.getElementById('editUserPhone').value,
+        age: document.getElementById('editUserAge').value,
+        gender: document.getElementById('editUserGender').value,
+        password: document.getElementById('editUserPassword').value
+      };
+      fetch(`/update_user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        alert("User updated successfully!");
+        location.reload();
+      });
+    }
+
+    function editDriver(id, first, last, phone, age, gender, password, status) {
+      document.getElementById('editDriverId').value = id;
+      document.getElementById('editDriverFirst').value = first;
+      document.getElementById('editDriverLast').value = last;
+      document.getElementById('editDriverPhone').value = phone;
+      document.getElementById('editDriverAge').value = age;
+      document.getElementById('editDriverGender').value = gender;
+      document.getElementById('editDriverPassword').value = password;
+      document.getElementById('editDriverStatus').value = status;
+      document.getElementById('driverModal').classList.add('show');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeDriverModal() {
+      document.getElementById('driverModal').classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+
+    function saveDriver() {
+      const payload = {
+        id: document.getElementById('editDriverId').value,
+        first_name: document.getElementById('editDriverFirst').value,
+        last_name: document.getElementById('editDriverLast').value,
+        phone_number: document.getElementById('editDriverPhone').value,
+        age: document.getElementById('editDriverAge').value,
+        gender: document.getElementById('editDriverGender').value,
+        password: document.getElementById('editDriverPassword').value,
+        driver_status: document.getElementById('editDriverStatus').value
+      };
+      fetch(`/update_driver`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        alert("Driver updated successfully!");
+        location.reload();
+      });
+    }
+
+    function submitCustomText() {
+      const inputText = document.getElementById('customTextInput').value;
+      fetch('/custom_api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: inputText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert("Response from server: " + JSON.stringify(data));
+        console.log(data)
+      })
+      .catch(error => {
+        alert("Error: " + error);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("table tr").forEach(row => {
+        row.addEventListener("click", function () {
+          document.querySelectorAll("table tr").forEach(r => r.classList.remove("selected"));
+          this.classList.add("selected");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+

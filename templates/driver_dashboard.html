@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Driver Dashboard</title>
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: url("https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg") no-repeat center center fixed;
+                background-size: cover;
+                overflow-x: hidden;
+                max-width: 100%;
+            }
+
+            .hero {
+                width: 100%;
+                background: #000;
+                color: #fff;
+                padding: 15px 30px;
+                display: flex;
+                align-items: center;
+                position: relative;
+            }
+
+            .hero-title {
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+            .hero-buttons {
+                position: absolute;
+                top: 15px;
+                right: 30px;
+                display: flex;
+                gap: 10px;
+            }
+
+            .hero-buttons a {
+                color: #fff;
+                text-decoration: none;
+                background: #333;
+                padding: 8px 15px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+
+            .hero-buttons a:hover {
+                background-color: #555;
+            }
+
+            .dashboard-container {
+                background: rgba(255, 255, 255, 0.85);
+                max-width: 1000px;
+                margin: 40px auto;
+                padding: 30px 40px;
+                border-radius: 20px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            }
+            .slider-wrapper {
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding-bottom: 10px;
+                border-radius: 12px;
+                scroll-behavior: smooth;
+                margin-bottom: 20px;
+                max-width: 100%;
+            }
+            .slider-wrapper::-webkit-scrollbar {
+                height: 8px;
+            }
+            .slider-wrapper::-webkit-scrollbar-thumb {
+                background-color: #999;
+                border-radius: 10px;
+            }
+            .main-split {
+                display: flex;
+                width: 100%;
+                height: calc(100vh - 80px); /* keep if header height is ~80px */
+                padding: 0 20px; /* only horizontal padding */
+                gap: 20px;
+                box-sizing: border-box;
+            }
+
+            .left-panel {
+                flex: 0 0 65%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .right-panel {
+                flex: 0 0 35%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .graph-box {
+                width: 50%; /* Reduced width */
+                max-width: 300px;
+                height: 48%;
+                background-color: rgba(255, 255, 255, 0.88);
+                padding: 20px;
+                border-radius: 20px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: 600;
+                font-size: 18px;
+                transition: transform 0.2s ease-in-out;
+            }
+
+            .graph-box:hover {
+                transform: scale(1.02);
+            }
+            .dashboard-container {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .slider-wrapper {
+                overflow-x: auto;
+                flex-grow: 1;
+                border-radius: 12px;
+                scroll-behavior: smooth;
+            }
+
+            .slider-wrapper {
+                overflow-x: auto;
+                flex-grow: 1;
+                border-radius: 12px;
+                scroll-behavior: smooth;
+            }
+            .chart-box {
+                width: 280px;
+                height: 220px;
+                padding: 15px;
+                background-color: #f9f9f0;
+                border: 1px solid #ddd;
+                border-radius: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 4px 8px rgba(147, 16, 16, 0.1);
+            }
+
+            #tableTitle {
+                text-align: center;
+                color: #000;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .controls {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .controls button {
+                padding: 10px 25px;
+                font-size: 16px;
+                font-weight: bold;
+                border: none;
+                border-radius: 25px;
+                background-color: #c5f178;
+                color: #333;
+                margin: 0 10px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .controls button:hover {
+                background-color: #c5f178;
+            }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 999;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .modal-content {
+                background-color: #fff;
+                margin: 10% auto;
+                padding: 30px;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 500px;
+                font-size: 16px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .modal-content h2 {
+                margin-top: 0;
+                text-align: center;
+            }
+
+            .close {
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .small-box {
+                width: 250px;
+                height: 120px;
+                padding: 15px 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 12px;
+                background-color: #f9f9f0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .small-box .stat-title {
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 6px;
+            }
+            .small-box .stat-value {
+                font-size: 28px;
+                font-weight: bold;
+                color: #37474f;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background-color: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            thead {
+                background-color: #343a40;
+                color: #fff;
+            }
+
+            th,
+            td {
+                padding: 12px 15px;
+                text-align: center;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            tbody tr:hover {
+                background-color: #f1f3f5;
+            }
+
+            th {
+                font-weight: 600;
+            }
+
+            #giveRideBtn {
+                display: none;
+                margin: 20px auto;
+                padding: 10px 20px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            #giveRideBtn:hover {
+                background-color: #c82333;
+            }
+            #logout_button {
+                margin-right: 70px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="hero">
+            <div class="hero-title">RideOne - Driver Dashboard</div>
+            <div class="hero-buttons">
+                <a href="#" onclick="showDriverProfile()">Profile</a>
+                <a href="#" id="logout_button" onclick="logout()">Log Out</a>
+            </div>
+        </div>
+
+        <div class="main-split">
+            <!-- Left Panel (65%) -->
+            <div class="left-panel">
+                <div class="dashboard-container">
+                    <h2 id="tableTitle">Available Rides (Driver Not Assigned)</h2>
+
+                    <div class="controls">
+                        <button id="toggleBtn" onclick="toggleView()">Show Active Rides</button>
+                        <button id="pastBtn" onclick="showPastRides()">Show Past Rides</button>
+                    </div>
+
+                    <div class="slider-wrapper">
+                        <table>
+                            <thead>
+                                <tr id="tableHeaderRow"></tr>
+                            </thead>
+                            <tbody id="rideTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <button id="giveRideBtn" onclick="giveRide()">Give Ride</button>
+                </div>
+
+                <!-- Profile Modal -->
+                <div id="profileModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeProfileModal()">&times;</span>
+                        <h2>🚗 Driver Profile</h2>
+                        <p><strong>Email:</strong> <span id="driver_email"></span></p>
+                        <p><strong>License ID:</strong> <span id="license_id"></span></p>
+                        <p><strong>Name:</strong> <span id="first_name"></span> <span id="middle_name"></span> <span id="last_name"></span></p>
+                        <p><strong>Phone:</strong> <span id="phone_number"></span></p>
+                        <p><strong>License Expiry:</strong> <span id="license_expiry"></span></p>
+                        <p><strong>Gender:</strong> <span id="gender"></span></p>
+                        <p><strong>DOB:</strong> <span id="dob"></span></p>
+                        <p><strong>Age:</strong> <span id="age"></span></p>
+                        <p><strong>Address:</strong> <span id="address"></span>, <span id="city"></span> - <span id="pincode"></span></p>
+                        <p><strong>Registration Date:</strong> <span id="registration_date"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel (35%) -->
+            <div class="right-panel">
+                <div id="graphTop" class="stat-card small-box">
+                    <div class="stat-title">Average Earnings</div>
+                    <div class="stat-value" id="avgEarnings">$0.00</div>
+                </div>
+                <div id="graphBottom" class="graph-box">
+                    <canvas id="ratingChart" width="250" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            let selectedRideId = null;
+            let showingActive = false;
+            let driver_details = null;
+            let driver_data = null;
+            async function fetchRides() {
+                const token = localStorage.getItem("token");
+                if (!token) return (window.location.href = "/login");
+
+                const url = showingActive ? "/api/driver_active_rides" : "/api/driver_dashboard";
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: "Bearer " + token,
+                    },
+                });
+
+                const data = await response.json();
+                const tableBody = document.getElementById("rideTableBody");
+                const headerRow = document.getElementById("tableHeaderRow");
+                tableBody.innerHTML = "";
+                headerRow.innerHTML = "";
+
+                if (!response.ok) {
+                    window.location.href = "/login";
+                    return;
+                }
+                driver_details = data.driver_details;
+                // renderRatingChart(); // <-- Call chart here
+              //  displayAvgEarnings();
+                headerRow.innerHTML = `
+        <th>Ride ID</th>
+        <th>Customer Email</th>
+        <th>Pickup</th>
+        <th>Drop</th>
+        <th>Start Time</th>
+        <th>Seats</th>
+        <th>End Time</th>
+        <th>Duration(in minutes)</th>
+        <th>Distance(in miles)</th>
+        <th>Fare</th>
+        <th>Status</th>
+        ${showingActive ? "<th>Actions</th>" : ""}
+      `;
+                document.getElementById("tableTitle").innerText = showingActive ? "Active Rides (Assigned to You)" : "Available Rides (Driver Not Assigned)";
+                console.log(data);
+                driver_data = data;
+                console.log(driver_data.unassigned);
+                (driver_data.unassigned || []).forEach((ride) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+          <td>${ride.ride_id}</td>
+          <td>${ride.customer_email}</td>
+          <td>${ride.pickup_location}</td>
+          <td>${ride.drop_location}</td>
+          <td>${ride.start_time}</td>
+          <td>${ride.seats}</td>
+          
+          <td>${ride.end_time}</td>
+          <td>${ride.duration}</td>
+          <td>${ride.distance}</td>
+          <td>$${ride.fare}</td>
+          <td>${ride.ride_status}</td>
+        `;
+
+                    if (showingActive) {
+                        const actionTd = document.createElement("td");
+                        const startBtn = document.createElement("button");
+                        startBtn.innerText = "Start Ride";
+                        startBtn.onclick = () => updateRideStatus(ride.ride_id, "start");
+
+                        const completeBtn = document.createElement("button");
+                        completeBtn.innerText = "Complete Ride";
+                        completeBtn.onclick = () => updateRideStatus(ride.ride_id, "complete");
+
+                        actionTd.appendChild(startBtn);
+                        actionTd.appendChild(document.createTextNode(" "));
+                        actionTd.appendChild(completeBtn);
+                        row.appendChild(actionTd);
+                    } else {
+                        row.addEventListener("click", () => {
+                            document.querySelectorAll("tbody tr").forEach((r) => (r.style.backgroundColor = ""));
+                            row.style.backgroundColor = "#ffeeba";
+                            selectedRideId = ride.ride_id;
+                            document.getElementById("giveRideBtn").style.display = "inline-block";
+                        });
+                    }
+
+                    tableBody.appendChild(row);
+                });
+                document.getElementById("giveRideBtn").style.display = showingActive ? "none" : "inline-block";
+            }
+            
+            let stats = null;
+            async function fetchStats() {
+                const token = localStorage.getItem("token");
+                if (!token) return (window.location.href = "/login");
+
+                const url = showingActive ? "/api/driver_active_rides" : "/api/driver_dashboard";
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: "Bearer " + token,
+                    },
+                });
+
+                const data = await response.json();
+                stats = data.driver_details
+                displayAvgEarnings();
+                renderRatingChart();
+            }
+            fetchStats();
+            function renderRatingChart() {
+                const rating = stats[23];
+                const positive = stats[24];
+                const negative = stats[25];
+
+                const ctx = document.getElementById("ratingChart").getContext("2d");
+
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ["Avg Rating", "Positive", "Negative"],
+                        datasets: [
+                            {
+                                label: "Driver Performance",
+                                data: [rating, positive, negative],
+                                backgroundColor: ["#007bff", "#28a745", "#dc3545"],
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 },
+                            },
+                        },
+                    },
+                });
+            }
+            
+            function displayAvgEarnings() {
+                const earnings = stats[22];
+                const earningsText = `$${parseFloat(earnings).toFixed(2)}`;
+                document.getElementById("avgEarnings").textContent = earningsText;
+            }
+
+            async function giveRide() {
+                if (!selectedRideId) return alert("Please select a ride first.");
+
+                const token = localStorage.getItem("token");
+                const response = await fetch("/give_ride", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token,
+                    },
+                    body: JSON.stringify({ ride_id: selectedRideId }),
+                });
+
+                const result = await response.json();
+                if (response.ok && result.status === "success") {
+                    alert("Ride assigned! Message sent to Respective Passenger");
+                    fetchRides();
+                } else {
+                    alert("Error: " + (result.message || "Unknown error"));
+                }
+            }
+
+            async function updateRideStatus(ride_id, action) {
+                const token = localStorage.getItem("token");
+                const response = await fetch("/update_ride_status", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token,
+                    },
+                    body: JSON.stringify({ ride_id, action }),
+                });
+
+                const result = await response.json();
+                if (response.ok && result.status === "success") {
+                    alert(`Ride ${action === "start" ? "started" : "completed"}!`);
+                    fetchRides();
+                } else {
+                    alert("Error: " + (result.message || "Unknown error"));
+                }
+            }
+
+            function toggleView() {
+                showingActive = !showingActive;
+                document.getElementById("toggleBtn").innerText = showingActive ? "Show Unassigned Rides" : "Show Active Rides";
+                fetchRides();
+            }
+
+            function showDriverProfile() {
+                const d = driver_details;
+                if (!d) {
+                    alert("Invalid driver profile data.");
+                    return;
+                }
+
+                document.getElementById("driver_email").textContent = d[1];
+                document.getElementById("license_id").textContent = d[2];
+                document.getElementById("first_name").textContent = d[3];
+                document.getElementById("middle_name").textContent = d[4];
+                document.getElementById("last_name").textContent = d[5];
+                document.getElementById("phone_number").textContent = d[6];
+                document.getElementById("license_expiry").textContent = new Date(d[7]).toLocaleDateString();
+                document.getElementById("gender").textContent = d[8];
+                document.getElementById("dob").textContent = new Date(d[9]).toLocaleDateString();
+                document.getElementById("age").textContent = d[11];
+                document.getElementById("address").textContent = d[12];
+                document.getElementById("city").textContent = d[13];
+                document.getElementById("pincode").textContent = d[14];
+                document.getElementById("registration_date").textContent = new Date(d[15]).toLocaleDateString();
+                document.getElementById("profileModal").style.display = "block";
+            }
+            function closeProfileModal() {
+                document.getElementById("profileModal").style.display = "none";
+            }
+
+            async function showPastRides() {
+                const token = localStorage.getItem("token");
+                if (!token) return (window.location.href = "/login");
+
+                const response = await fetch("/api/driver_past_rides", {
+                    headers: {
+                        Authorization: "Bearer " + token,
+                    },
+                });
+
+                const data = await response.json();
+                const tableBody = document.getElementById("rideTableBody");
+                const headerRow = document.getElementById("tableHeaderRow");
+                tableBody.innerHTML = "";
+                headerRow.innerHTML = "";
+
+                if (!response.ok) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                headerRow.innerHTML = `
+        <th>Ride ID</th>
+        <th>Customer Email</th>
+        <th>Pickup</th>
+        <th>Drop</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Duration(in minutes)</th>
+        <th>Distance(in miles)</th>
+        <th>Fare</th>
+        <th>Status</th>
+      `;
+
+                document.getElementById("tableTitle").innerText = "Past Rides (Completed)";
+
+                data.forEach((ride) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+          <td>${ride.ride_id}</td>
+          <td>${ride.customer_email}</td>
+          <td>${ride.pickup_location}</td>
+          <td>${ride.drop_location}</td>
+          <td>${ride.start_time}</td>
+          <td>${ride.end_time}</td>
+          <td>${ride.duration}</td>
+          <td>${ride.distance}</td>
+          <td>$${ride.fare}</td>
+          <td>${ride.ride_status}</td>
+        `;
+                    tableBody.appendChild(row);
+                });
+
+                document.getElementById("giveRideBtn").style.display = "none";
+            }
+
+            function logout() {
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+            }
+
+            fetchRides();
+        </script>
+    </body>
+</html>

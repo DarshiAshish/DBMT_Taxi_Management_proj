@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RideOne</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: url('https://img.freepik.com/free-photo/new-york-view-with-empire-state-building_23-2150806052.jpg') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      animation: fadeIn 1.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      display: flex;
+      width: 90%;
+      max-width: 1000px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 20px;
+      padding: 40px;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .left-panel {
+      text-align: center;
+      flex: 1;
+      margin-right: 40px;
+    }
+
+    .left-panel h1 {
+      margin-bottom: 20px;
+      font-size: 32px;
+      font-weight: 700;
+      color: #ffe600;
+    }
+
+    .car-img {
+      max-width: 100%;
+      height: auto;
+      max-height: 200px;
+      border-radius: 10px;
+    }
+
+    .right-panel {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-form {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(5px);
+      transition: transform 0.2s ease;
+    }
+
+    .login-form.shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0px); }
+    }
+
+    .login-form input {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 14px;
+    }
+
+    .login-form input::placeholder {
+      color: #ddd;
+    }
+
+    .login-form button {
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      background-color: #ffe600;
+      color: black;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-form button:hover {
+      background-color: #ffdd00;
+    }
+
+    .message {
+      font-size: 14px;
+      text-align: center;
+      color: lightgray;
+    }
+
+    .message.success {
+      color: limegreen;
+    }
+
+    .show-password {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+      .left-panel {
+        margin-right: 0;
+        margin-bottom: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <h1>RideOne</h1>
+      <img src="{{ url_for('static', filename='car.gif') }}" alt="Car" class="car-img">
+    </div>
+
+    <div class="right-panel">
+      <form class="login-form" id="login-form" method="POST" action="javascript:void(0);">
+        <input type="text" id="username" name="username" placeholder="UserName" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <label class="show-password">
+          <input type="checkbox" id="show-pass" style="margin-right: 6px;"> Show Password
+        </label>
+        <button type="submit">Login</button>
+        <div id="message" class="message"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Show/hide password
+    document.getElementById('show-pass').addEventListener('change', function () {
+      const passField = document.getElementById('password');
+      passField.type = this.checked ? 'text' : 'password';
+    });
+
+    // Login
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+      const form = document.querySelector('.login-form');
+      messageDiv.textContent = '';
+
+      if (!username || !password) {
+        messageDiv.textContent = "Please enter both username and password.";
+        return;
+      }
+
+      try {
+        const response = await fetch('/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('token', data.access_token);
+          messageDiv.textContent = "✅ Login successful! Redirecting...";
+          messageDiv.classList.add("success");
+          setTimeout(() => window.location.href = "/admin_dashboard", 1000);
+        } else {
+          messageDiv.textContent = data.msg || "❌ Login failed.";
+          form.classList.add('shake');
+          setTimeout(() => form.classList.remove('shake'), 300);
+        }
+      } catch (err) {
+        console.error(err);
+        messageDiv.textContent = "⚠️ Server error.";
+      }
+    });
+  </script>
+</body>
+</html>
