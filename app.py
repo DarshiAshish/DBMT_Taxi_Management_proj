@@ -16,7 +16,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 
-pass_word = "ABCDabcd123$"
+pass_word = "" # enter the password here
 
 conn = mysql.connector.connect(
 host="localhost",
@@ -709,14 +709,14 @@ def give_ride():
     # from twilio.rest import Client
 
     # # Twilio credentials from your Twilio account
-    # account_sid = 'ACe5ee06752d24c0439be0076a72c36734'
-    # auth_token = '3c709a8a80d38189df5b562f9662457a'
+    # account_sid = '' # account sid
+    # auth_token = '' # auth token
     # client = Client(account_sid, auth_token)
 
     # message = client.messages.create(
     # body="Driver accepted your ride!",
-    # from_='+18334365086', # twilio generated number
-    # to='+17132563352'      # Your phone number
+    # from_='', # twilio generated number
+    # to=''      # Your phone number
     # )
 
     # print(f"Message sent with SID: {message.sid}")
